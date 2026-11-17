@@ -3,6 +3,10 @@ import java.util.PriorityQueue;
 
 public class GraphOriented<T> extends Graph<T> {
 
+    public GraphOriented(String rrcc) {
+        super(rrcc);
+    }
+
     @Override
     public void addEdge(T source, T dest, float weight) {
         Node<T> startNode = nodes.get(source);

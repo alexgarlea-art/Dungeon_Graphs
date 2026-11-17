@@ -2,14 +2,15 @@ import java.util.HashMap;
 
 public abstract class Graph<T> {
     protected HashMap<T, Node<T>> nodes;
-
-    public Graph() {
+    private String size = "";
+    public Graph(String rrcc) {
         this.nodes = new HashMap<>();
+        this.size = rrcc;
     }
 
-    public void addNode(T value) {
+    public void addNode(T value, int row, int col) {
         if (!nodes.containsKey(value)) {
-            nodes.put(value, new Node<>(value));
+            nodes.put(value, new Node<>(value, row, col));
         } else {
             System.out.println("Element already inside the graph.");
         }
@@ -29,6 +30,18 @@ public abstract class Graph<T> {
         } else {
             System.out.println("One or both nodes do not exist.");
         }
+    }
+
+    public int getCols(){
+        return Integer.parseInt(this.size)%100;
+    }
+
+    public int getRows(){
+        return Integer.parseInt(this.size)/100;
+    }
+
+    public int getSize() {
+        return this.getCols() * this.getRows();
     }
 
     @Override

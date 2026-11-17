@@ -2,6 +2,10 @@ import java.util.*;
 
 public class GraphNotOriented<T> extends Graph<T> {
 
+    public GraphNotOriented(String rrcc) {
+        super(rrcc);
+    }
+
     @Override
     public void addEdge(T source, T dest, float weight) {
         Node<T> startNode = nodes.get(source);
@@ -16,10 +20,10 @@ public class GraphNotOriented<T> extends Graph<T> {
     }
 
     private class Arco {
-        T da, a;
+        T origin, target;
         float peso;
-        Arco(T da, T a, float peso) {
-            this.da = da; this.a = a; this.peso = peso;
+        Arco(T origin, T target, float peso) {
+            this.origin = origin; this.target = target; this.peso = peso;
         }
     }
 
