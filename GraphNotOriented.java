@@ -79,18 +79,18 @@ public class GraphNotOriented<T> extends Graph<T> {
         tuttiGliArchi.sort((a, b) -> Float.compare(a.peso, b.peso));
 
         for (Arco arco : tuttiGliArchi) {
-            T radiceDa = arco.da;
+            T radiceDa = arco.origin;
             while (!parent.get(radiceDa).equals(radiceDa)) {
                 radiceDa = parent.get(radiceDa);
             }
 
-            T radiceA = arco.a;
+            T radiceA = arco.target;
             while (!parent.get(radiceA).equals(radiceA)) {
                 radiceA = parent.get(radiceA);
             }
 
             if (!radiceDa.equals(radiceA)) {
-                mst.addEdge(arco.da, arco.a, arco.peso);
+                mst.addEdge(arco.origin, arco.target, arco.peso);
                 parent.put(radiceDa, radiceA);
             }
         }
