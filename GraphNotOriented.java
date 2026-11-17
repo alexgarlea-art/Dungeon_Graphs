@@ -20,18 +20,18 @@ public class GraphNotOriented<T> extends Graph<T> {
     }
 
     private class Arco {
-        T origin, target;
+        String origin, target;
         float peso;
-        Arco(T origin, T target, float peso) {
+        Arco(String origin, String target, float peso) {
             this.origin = origin; this.target = target; this.peso = peso;
         }
     }
 
-    public GraphNotOriented<T> prim(T radix) {
-        GraphNotOriented<T> mst = new GraphNotOriented<>(this.getSize());
+    public GraphNotOriented<String> prim(String radix) {
+        GraphNotOriented<String> mst = new GraphNotOriented<>(this.getSize());
         if (!nodes.containsKey(radix)) return mst;
 
-        HashSet<T> visitati = new HashSet<>();
+        HashSet<String> visitati = new HashSet<>();
         PriorityQueue<Arco> codaArchi = new PriorityQueue<>((a, b) -> Float.compare(a.peso, b.peso));
 
         mst.addNode(radix);
@@ -49,7 +49,7 @@ public class GraphNotOriented<T> extends Graph<T> {
             mst.addNode(arcoMinimo.target);
             mst.addEdge(arcoMinimo.origin, arcoMinimo.target, arcoMinimo.peso);
 
-            T nuovoNodo = arcoMinimo.target;
+            String nuovoNodo = arcoMinimo.target;
             visitati.add(nuovoNodo);
 
             for (var entry : nodes.get(nuovoNodo).getAdjacencies().entrySet()) {
@@ -64,22 +64,22 @@ public class GraphNotOriented<T> extends Graph<T> {
 
     public GraphNotOriented<T> kruskal() {
         GraphNotOriented<T> mst = new GraphNotOriented<>();
-        Map<T, T> parent = new HashMap<>();
+        Map<String, String> parent = new HashMap<>();
         List<Arco> tuttiGliArchi = new ArrayList<>();
 
-        for (T nodoVal : nodes.keySet()) {
-            mst.addNode(nodoVal);
-            parent.put(nodoVal, nodoVal);
+        for (String id : nodes.keySet()) {
+            mst.addNode(id);
+            parent.put(id, id);
 
-            for (var entry : nodes.get(nodoVal).getAdjacencies().entrySet()) {
-                tuttiGliArchi.add(new Arco(nodoVal, entry.getKey().getValue(), entry.getValue()));
+            for (var entry : nodes.get(id).getAdjacencies().entrySet()) {
+                tuttiGliArchi.add(new Arco((T)id, (T)entry.getKey().getValue(), entry.getValue()));
             }
         }
 
         tuttiGliArchi.sort((a, b) -> Float.compare(a.peso, b.peso));
 
         for (Arco arco : tuttiGliArchi) {
-            T radiceDa = arco.origin;
+            String radiceDa = arco.origin;
             while (!parent.get(radiceDa).equals(radiceDa)) {
                 radiceDa = parent.get(radiceDa);
             }
