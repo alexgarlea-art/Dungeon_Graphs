@@ -8,8 +8,8 @@ public class GraphNotOriented<T> extends Graph<T> {
 
     @Override
     public void addEdge(T source, T dest, float weight) {
-        Node<T> startNode = nodes.get(source);
-        Node<T> destNode = nodes.get(dest);
+        Node startNode = nodes.get(source);
+        Node destNode = nodes.get(dest);
 
         if (startNode != null && destNode != null) {
             startNode.addAdjacency(destNode, weight);
@@ -28,7 +28,7 @@ public class GraphNotOriented<T> extends Graph<T> {
     }
 
     public GraphNotOriented<T> prim(T radix) {
-        GraphNotOriented<T> mst = new GraphNotOriented<>();
+        GraphNotOriented<T> mst = new GraphNotOriented<>(this.getSize());
         if (!nodes.containsKey(radix)) return mst;
 
         HashSet<T> visitati = new HashSet<>();
@@ -44,12 +44,12 @@ public class GraphNotOriented<T> extends Graph<T> {
         while (!codaArchi.isEmpty()) {
             Arco arcoMinimo = codaArchi.poll();
 
-            if (visitati.contains(arcoMinimo.a)) continue;
+            if (visitati.contains(arcoMinimo.target)) continue;
 
-            mst.addNode(arcoMinimo.a);
-            mst.addEdge(arcoMinimo.da, arcoMinimo.a, arcoMinimo.peso);
+            mst.addNode(arcoMinimo.target);
+            mst.addEdge(arcoMinimo.origin, arcoMinimo.target, arcoMinimo.peso);
 
-            T nuovoNodo = arcoMinimo.a;
+            T nuovoNodo = arcoMinimo.target;
             visitati.add(nuovoNodo);
 
             for (var entry : nodes.get(nuovoNodo).getAdjacencies().entrySet()) {

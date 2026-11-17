@@ -1,29 +1,38 @@
 import java.util.HashMap;
 
 public abstract class Graph<T> {
-    protected HashMap<T, Node<T>> nodes;
+    protected HashMap<String, Node> nodes;
     private String size = "";
     public Graph(String rrcc) {
         this.nodes = new HashMap<>();
         this.size = rrcc;
     }
 
-    public void addNode(T value, int row, int col) {
-        if (!nodes.containsKey(value)) {
-            nodes.put(value, new Node<>(value, row, col));
+    public void addNode(String id) {
+        if (!nodes.containsKey(id)) {
+            nodes.put(id, new Node(Integer.parseInt(id)/100, Integer.parseInt(id)%100));
         } else {
             System.out.println("Element already inside the graph.");
         }
     }
 
-    public HashMap<T, Node<T>> getNodesMap() {
+    public void addNode(int row, int col){
+        String id = "" + row + col;
+        if (!nodes.containsKey(id)) {
+            nodes.put(id, new Node(row, col));
+        } else {
+            System.out.println("Element already inside the graph.");
+        }
+    }
+
+    public HashMap<String, Node> getNodesMap() {
         return this.nodes;
     }
 
 
     public void addEdge(T start, T dest, float weight) {
-        Node<T> startNode = nodes.get(start);
-        Node<T> destNode = nodes.get(dest);
+        Node startNode = nodes.get(start);
+        Node destNode = nodes.get(dest);
 
         if (startNode != null && destNode != null) {
             startNode.addAdjacency(destNode, weight);
@@ -40,8 +49,8 @@ public abstract class Graph<T> {
         return Integer.parseInt(this.size)/100;
     }
 
-    public int getSize() {
-        return this.getCols() * this.getRows();
+    public String getSize() {
+        return this.size;
     }
 
     @Override
