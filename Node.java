@@ -1,19 +1,23 @@
 import java.util.HashMap;
 
-public class Node {
-    private final String id;
-    private int col;
-    private int row;
-    private final HashMap<Node, Float> adjacencies;
+public class Node<T> {
+    private final T id;
+    private final int row;
+    private final int col;
+    private final HashMap<Node<T>, Float> adjacencies;
 
-    public Node(int row, int col) {
-        this.adjacencies = new HashMap<>();
-        this.row = row;
-        this.col = col;
-        this.id = String.format("%2s%2s", row, col);
+    public Node(T id) {
+        this(id, -1, -1);
     }
 
-    public String getValue() {
+    public Node(T id, int row, int col) {
+        this.adjacencies = new HashMap<>();
+        this.id = id;
+        this.row = row;
+        this.col = col;
+    }
+
+    public T getValue() {
         return this.id;
     }
 
@@ -25,11 +29,11 @@ public class Node {
         return col;
     }
 
-    public void addAdjacency(Node node, float weight) {
+    public void addAdjacency(Node<T> node, float weight) {
         this.adjacencies.put(node, weight);
     }
 
-    public HashMap<Node, Float> getAdjacencies() {
+    public HashMap<Node<T>, Float> getAdjacencies() {
         return this.adjacencies;
     }
 
