@@ -35,6 +35,13 @@ public class GraphNotOriented extends Graph {
         other.addNode(n.getRow(), n.getCol());
     }
 
+    private String find(Map<String, String> parent, String x) {
+        while (!parent.get(x).equals(x)) {
+            x = parent.get(x);
+        }
+        return x;
+    }
+
     public GraphNotOriented prim(String radix) {
         GraphNotOriented mst = new GraphNotOriented(this.getSize());
         if (!nodes.containsKey(radix)) return mst;
@@ -68,13 +75,6 @@ public class GraphNotOriented extends Graph {
             }
         }
         return mst;
-    }
-
-    private String find(Map<String, String> parent, String x) {
-        while (!parent.get(x).equals(x)) {
-            x = parent.get(x);
-        }
-        return x;
     }
 
     public GraphNotOriented kruskal() {

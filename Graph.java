@@ -21,14 +21,14 @@ public abstract class Graph {
     public void addNode(int row, int col) {
         if(row <= this.getRows() && col <= this.getCols()) {
 
-            String id = "" + (col * 100 + row);
+            StringBuilder id = new StringBuilder("" + (col * 100 + row));
 
             while(id.length() < 4){
-                id = "0" + id;
+                id.insert(0, "0");
             }
 
-            if (!nodes.containsKey(id)) {
-                nodes.put(id, new Node(id));
+            if (!nodes.containsKey(id.toString())) {
+                nodes.put(id.toString(), new Node(id.toString()));
             } else {
                 System.out.println("Element already inside the graph.");
             }
