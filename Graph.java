@@ -11,15 +11,22 @@ public abstract class Graph {
     }
 
     public void addNode(String id){
+
+        if(!id.matches("[0-9]{4}")){
+            IO.println("Error: invalid ID.");
+            return;
+        }
+
+
         if (!nodes.containsKey(id)) {
             nodes.put(id, new Node(id));
         } else {
-            System.out.println("Element already inside the graph.");
+            IO.println("Element already inside the graph.");
         }
     }
 
     public void addNode(int row, int col) {
-        if(row <= this.getRows() && col <= this.getCols()) {
+        if(row <= this.getRows() && col <= this.getCols() && row >= 0 && col >= 0) {
 
             StringBuilder id = new StringBuilder("" + (col * 100 + row));
 
@@ -30,13 +37,17 @@ public abstract class Graph {
             if (!nodes.containsKey(id.toString())) {
                 nodes.put(id.toString(), new Node(id.toString()));
             } else {
-                System.out.println("Element already inside the graph.");
+                IO.println("Element already inside the graph.");
             }
 
         } else if (row > this.getRows()) {
-            IO.println("Input rows are greater than the graph's max rows.");
+            IO.println("Error: Input rows are greater than the graph's max rows.");
+        }else if(col > this.getCols()){
+            IO.println("Error: Input cols are greater than the graph's max cols.");
+        } else if (row < 0) {
+            IO.println("Error: negative row value");
         }else{
-            IO.println("Input cols are greater than the graph's max cols.");
+            IO.println("Error: negative col value");
         }
     }
 

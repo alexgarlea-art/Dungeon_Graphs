@@ -12,7 +12,14 @@ public class Node {
         this.col = Integer.parseInt(id) / 100;
     }
 
-    public Node(String id, int row, int col) {
+    public Node(int row, int col) {
+
+        String id;
+        id = "" + (col * 100 + row);
+        while(id.length() < 4){
+            id = "0" + id;
+        }
+
         this.id = id;
         this.row = row;
         this.col = col;
