@@ -1,13 +1,13 @@
-public class Distance<T> {
-    private T prev;
+public class Distance {
+    private String prev;
     private float distance;
 
-    public Distance(T p, float d){
-        this.prev = p;
-        this.distance = d;
+    public Distance(String prev, float dist){
+        this.prev = prev;
+        this.distance = dist;
     }
 
-    public T getPrev() {
+    public String getPrev() {
         return prev;
     }
 
@@ -15,7 +15,7 @@ public class Distance<T> {
         return distance;
     }
 
-    public void setPrev(T prev) {
+    public void setPrev(String prev) {
         this.prev = prev;
     }
 

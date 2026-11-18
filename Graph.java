@@ -1,37 +1,52 @@
+import javax.swing.*;
 import java.util.HashMap;
 
-public abstract class Graph<T> {
-    protected HashMap<T, Node<T>> nodes;
+public abstract class Graph {
+    protected HashMap<String, Node> nodes;
     private final String size;
 
-    public Graph(String rrcc) {
+    public Graph(String ccrr) {
         this.nodes = new HashMap<>();
-        this.size = rrcc;
+        this.size = ccrr;
     }
 
-    public void addNode(T id) {
+    public void addNode(String id){
         if (!nodes.containsKey(id)) {
-            nodes.put(id, new Node<>(id));
+            nodes.put(id, new Node(id));
         } else {
             System.out.println("Element already inside the graph.");
         }
     }
 
-    public void addNode(T id, int row, int col) {
-        if (!nodes.containsKey(id)) {
-            nodes.put(id, new Node<>(id, row, col));
-        } else {
-            System.out.println("Element already inside the graph.");
+    public void addNode(int row, int col) {
+        if(row <= this.getRows() && col <= this.getCols()) {
+
+            String id = "" + (col * 100 + row);
+
+            while(id.length() < 4){
+                id = "0" + id;
+            }
+
+            if (!nodes.containsKey(id)) {
+                nodes.put(id, new Node(id));
+            } else {
+                System.out.println("Element already inside the graph.");
+            }
+
+        } else if (row > this.getRows()) {
+            IO.println("Input rows are greater than the graph's max rows.");
+        }else{
+            IO.println("Input cols are greater than the graph's max cols.");
         }
     }
 
-    public HashMap<T, Node<T>> getNodesMap() {
+    public HashMap<String, Node> getNodesMap() {
         return this.nodes;
     }
 
-    public void addEdge(T start, T dest, float weight) {
-        Node<T> startNode = nodes.get(start);
-        Node<T> destNode = nodes.get(dest);
+    public void addEdge(String start, String dest, float weight) {
+        Node startNode = nodes.get(start);
+        Node destNode = nodes.get(dest);
 
         if (startNode != null && destNode != null) {
             startNode.addAdjacency(destNode, weight);
@@ -41,11 +56,11 @@ public abstract class Graph<T> {
     }
 
     public int getCols() {
-        return Integer.parseInt(this.size) % 100;
+        return Integer.parseInt(this.size) / 100;
     }
 
     public int getRows() {
-        return Integer.parseInt(this.size) / 100;
+        return Integer.parseInt(this.size) % 100;
     }
 
     public String getSize() {

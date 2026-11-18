@@ -1,15 +1,15 @@
 import java.util.*;
 
-public class GraphNotOriented<T> extends Graph<T> {
+public class GraphNotOriented extends Graph {
 
-    public GraphNotOriented(String rrcc) {
-        super(rrcc);
+    public GraphNotOriented(String ccrr) {
+        super(ccrr);
     }
 
     @Override
-    public void addEdge(T source, T dest, float weight) {
-        Node<T> startNode = nodes.get(source);
-        Node<T> destNode = nodes.get(dest);
+    public void addEdge(String source, String dest, float weight) {
+        Node startNode = nodes.get(source);
+        Node destNode = nodes.get(dest);
 
         if (startNode != null && destNode != null) {
             startNode.addAdjacency(destNode, weight);
@@ -19,83 +19,83 @@ public class GraphNotOriented<T> extends Graph<T> {
         }
     }
 
-    private static class Arco<T> {
-        final T origin, target;
+    private static class Arco {
+        final String origin, target;
         final float peso;
 
-        Arco(T origin, T target, float peso) {
+        Arco(String origin, String target, float peso) {
             this.origin = origin;
             this.target = target;
             this.peso = peso;
         }
     }
 
-    private void copyNodeInto(GraphNotOriented<T> other, T id) {
-        Node<T> n = nodes.get(id);
-        other.addNode(id, n.getRow(), n.getCol());
+    private void copyNodeInto(GraphNotOriented other, String id) {
+        Node n = nodes.get(id);
+        other.addNode(n.getRow(), n.getCol());
     }
 
-    public GraphNotOriented<T> prim(T radix) {
-        GraphNotOriented<T> mst = new GraphNotOriented<>(this.getSize());
+    public GraphNotOriented prim(String radix) {
+        GraphNotOriented mst = new GraphNotOriented(this.getSize());
         if (!nodes.containsKey(radix)) return mst;
 
-        HashSet<T> visitati = new HashSet<>();
-        PriorityQueue<Arco<T>> codaArchi = new PriorityQueue<>((a, b) -> Float.compare(a.peso, b.peso));
+        HashSet<String> visitati = new HashSet<>();
+        PriorityQueue<Arco> codaArchi = new PriorityQueue<>((a, b) -> Float.compare(a.peso, b.peso));
 
         copyNodeInto(mst, radix);
         visitati.add(radix);
 
         for (var entry : nodes.get(radix).getAdjacencies().entrySet()) {
-            codaArchi.add(new Arco<>(radix, entry.getKey().getValue(), entry.getValue()));
+            codaArchi.add(new Arco(radix, entry.getKey().getValue(), entry.getValue()));
         }
 
         while (!codaArchi.isEmpty()) {
-            Arco<T> arcoMinimo = codaArchi.poll();
+            Arco arcoMinimo = codaArchi.poll();
 
             if (visitati.contains(arcoMinimo.target)) continue;
 
             copyNodeInto(mst, arcoMinimo.target);
             mst.addEdge(arcoMinimo.origin, arcoMinimo.target, arcoMinimo.peso);
 
-            T nuovoNodo = arcoMinimo.target;
+            String nuovoNodo = arcoMinimo.target;
             visitati.add(nuovoNodo);
 
             for (var entry : nodes.get(nuovoNodo).getAdjacencies().entrySet()) {
-                T vicino = entry.getKey().getValue();
+                String vicino = entry.getKey().getValue();
                 if (!visitati.contains(vicino)) {
-                    codaArchi.add(new Arco<>(nuovoNodo, vicino, entry.getValue()));
+                    codaArchi.add(new Arco(nuovoNodo, vicino, entry.getValue()));
                 }
             }
         }
         return mst;
     }
 
-    private T find(Map<T, T> parent, T x) {
+    private String find(Map<String, String> parent, String x) {
         while (!parent.get(x).equals(x)) {
             x = parent.get(x);
         }
         return x;
     }
 
-    public GraphNotOriented<T> kruskal() {
-        GraphNotOriented<T> mst = new GraphNotOriented<>(this.getSize());
-        Map<T, T> parent = new HashMap<>();
-        List<Arco<T>> tuttiGliArchi = new ArrayList<>();
+    public GraphNotOriented kruskal() {
+        GraphNotOriented mst = new GraphNotOriented(this.getSize());
+        Map<String, String> parent = new HashMap<>();
+        List<Arco> tuttiGliArchi = new ArrayList<>();
 
-        for (T id : nodes.keySet()) {
+        for (String id : nodes.keySet()) {
             copyNodeInto(mst, id);
             parent.put(id, id);
 
             for (var entry : nodes.get(id).getAdjacencies().entrySet()) {
-                tuttiGliArchi.add(new Arco<>(id, entry.getKey().getValue(), entry.getValue()));
+                tuttiGliArchi.add(new Arco(id, entry.getKey().getValue(), entry.getValue()));
             }
         }
 
         tuttiGliArchi.sort((a, b) -> Float.compare(a.peso, b.peso));
 
-        for (Arco<T> arco : tuttiGliArchi) {
-            T radiceDa = find(parent, arco.origin);
-            T radiceA = find(parent, arco.target);
+        for (Arco arco : tuttiGliArchi) {
+            String radiceDa = find(parent, arco.origin);
+            String radiceA = find(parent, arco.target);
 
             if (!radiceDa.equals(radiceA)) {
                 mst.addEdge(arco.origin, arco.target, arco.peso);

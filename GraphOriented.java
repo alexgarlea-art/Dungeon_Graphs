@@ -1,51 +1,39 @@
 import java.util.HashMap;
 import java.util.PriorityQueue;
 
-public class GraphOriented<T> extends Graph<T> {
+public class GraphOriented extends Graph {
 
     public GraphOriented(String rrcc) {
         super(rrcc);
     }
 
-    @Override
-    public void addEdge(T source, T dest, float weight) {
-        Node<T> startNode = nodes.get(source);
-        Node<T> destNode = nodes.get(dest);
+    public HashMap<String, Distance> dijkstra(String source) {
+        HashMap<String, Distance> risultati = new HashMap<>();
 
-        if (startNode != null && destNode != null) {
-            startNode.addAdjacency(destNode, weight);
-        } else {
-            System.out.println("One or both nodes do not exist.");
-        }
-    }
-
-    public HashMap<T, Distance<T>> dijkstra(T source) {
-        HashMap<T, Distance<T>> risultati = new HashMap<>();
-
-        for (T key : nodes.keySet()) {
-            risultati.put(key, new Distance<>(null, Float.MAX_VALUE));
+        for (String key : nodes.keySet()) {
+            risultati.put(key, new Distance(null, Float.MAX_VALUE));
         }
         if (risultati.containsKey(source)) {
             risultati.get(source).setDistance(0);
         }
 
-        PriorityQueue<T> coda = new PriorityQueue<>((a, b) ->
+        PriorityQueue<String> coda = new PriorityQueue<>((a, b) ->
                 Float.compare(risultati.get(a).getDistance(), risultati.get(b).getDistance())
         );
 
         coda.add(source);
 
         while (!coda.isEmpty()) {
-            T corrente = coda.poll();
-            Node<T> nodoCorrente = nodes.get(corrente);
+            String corrente = coda.poll();
+            Node nodoCorrente = nodes.get(corrente);
             float distCorrente = risultati.get(corrente).getDistance();
 
             if (distCorrente == Float.MAX_VALUE) break;
 
             for (var entry : nodoCorrente.getAdjacencies().entrySet()) {
-                Node<T> vicino = entry.getKey();
+                Node vicino = entry.getKey();
                 float pesoArco = entry.getValue();
-                T valoreVicino = vicino.getValue();
+                String valoreVicino = vicino.getValue();
 
                 float nuovaDistanza = distCorrente + pesoArco;
 
@@ -61,11 +49,11 @@ public class GraphOriented<T> extends Graph<T> {
         return risultati;
     }
 
-    public HashMap<T, Distance<T>> bellman_ford(T source) {
-        HashMap<T, Distance<T>> risultati = new HashMap<>();
+    public HashMap<String, Distance> Bellman_Ford(String source) {
+        HashMap<String, Distance> risultati = new HashMap<>();
 
-        for (T key : nodes.keySet()) {
-            risultati.put(key, new Distance<>(null, Float.MAX_VALUE));
+        for (String key : nodes.keySet()) {
+            risultati.put(key, new Distance(null, Float.MAX_VALUE));
         }
         if (risultati.containsKey(source)) {
             risultati.get(source).setDistance(0);
@@ -74,12 +62,12 @@ public class GraphOriented<T> extends Graph<T> {
         int numeroNodi = nodes.size();
 
         for (int i = 0; i < numeroNodi - 1; i++) {
-            for (Node<T> u : nodes.values()) {
+            for (Node u : nodes.values()) {
                 float distU = risultati.get(u.getValue()).getDistance();
                 if (distU == Float.MAX_VALUE) continue;
 
                 for (var entry : u.getAdjacencies().entrySet()) {
-                    Node<T> v = entry.getKey();
+                    Node v = entry.getKey();
                     float peso = entry.getValue();
                     float distV = risultati.get(v.getValue()).getDistance();
 
