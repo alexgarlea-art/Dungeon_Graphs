@@ -6,6 +6,7 @@ public class Main {
             System.out.println("Nessun risultato disponibile");
             return;
         }
+
         mappaRisultati.forEach((nodoDestinazione, infoDistanza) -> {
             String distStr = (infoDistanza.getDistance() == Float.MAX_VALUE) ? "Infinito" : String.valueOf(infoDistanza.getDistance());
             String prevStr = (infoDistanza.getPrev() == null) ? "Nessuno" : infoDistanza.getPrev();
@@ -14,6 +15,15 @@ public class Main {
         System.out.println();
     }
 
+    private static void stampaRisultatiDistanze(String[] seq) {
+        StringBuilder sb = new StringBuilder();
+        for (String item : seq) {
+            if (sb.length() > 0) {
+                sb.append(" -> ");
+            }
+            sb.append(item);
+        }
+    }
      void main() {
         System.out.println("1. TEST GRAFO ORIENTATO");
         GraphOriented go = new GraphOriented("1010");
@@ -42,8 +52,8 @@ public class Main {
         System.out.print(go);
 
         System.out.println("Esecuzione Dijkstra (Sorgente: 0000)");
-        HashMap<String, Distance> resDijkstra = go.dijkstra("0000", "0003");
-        stampaRisultatiDistanze(resDijkstra);
+        String[] resDijkstra = go.dijkstra("0000", "0003");
+        stampaRisultatiDistanze(resDijkstra.toString());
 
         System.out.println("Esecuzione Bellman-Ford (Sorgente: 0000)");
         HashMap<String, Distance> resBellman = go.bellman_ford("0000");
