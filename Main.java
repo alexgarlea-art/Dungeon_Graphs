@@ -14,7 +14,7 @@ public class Main {
         System.out.println();
     }
 
-    public static void main(String[] args) {
+     void main() {
         System.out.println("1. TEST GRAFO ORIENTATO");
         GraphOriented go = new GraphOriented("1010");
         go.addNode("0000");
@@ -42,7 +42,7 @@ public class Main {
         System.out.print(go);
 
         System.out.println("Esecuzione Dijkstra (Sorgente: 0000)");
-        HashMap<String, Distance> resDijkstra = go.dijkstra("0000");
+        HashMap<String, Distance> resDijkstra = go.dijkstra("0000", "0003");
         stampaRisultatiDistanze(resDijkstra);
 
         System.out.println("Esecuzione Bellman-Ford (Sorgente: 0000)");

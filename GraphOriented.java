@@ -1,5 +1,6 @@
-import java.util.HashMap;
-import java.util.PriorityQueue;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class GraphOriented extends Graph {
 
@@ -7,7 +8,33 @@ public class GraphOriented extends Graph {
         super(rrcc);
     }
 
-    public HashMap<String, Distance> dijkstra(String source) {
+    private String[] shortestPath(HashMap<String, Distance> map, String source, String dest){
+        List<String> spath = new ArrayList<>();
+        AtomicReference<String> toSearch = new AtomicReference<>("");
+        AtomicBoolean arrived = new AtomicBoolean(false);
+        if(map.containsKey(dest) && map.containsKey(source)){
+            spath.add(dest);
+
+            while(!arrived.get()){
+                map.forEach((name, dist) -> {
+                    if(name.equals(source)){
+                        spath.add(source);
+                        arrived.set(true);
+                    }else if(name.equals(toSearch)){
+                        toSearch.set(dist.getPrev());
+                        spath.add(name);
+                    }
+                });
+            }
+
+        }else if(!map.containsKey(source)){
+            IO.println("Source not in map.");
+        }else IO.println("Destination not in map.");
+
+        return spath.toArray(new String[spath.toArray().length]);
+    }
+
+    public String[] dijkstra(String source, String dest) {
         HashMap<String, Distance> risultati = new HashMap<>();
 
         for (String key : nodes.keySet()) {
@@ -46,10 +73,10 @@ public class GraphOriented extends Graph {
                 }
             }
         }
-        return risultati;
+        return shortestPath(risultati, source, dest);
     }
 
-    public HashMap<String, Distance> bellman_ford(String source) {
+    public String[] bellman_ford(String source, String dest) {
         HashMap<String, Distance> risultati = new HashMap<>();
 
         for (String key : nodes.keySet()) {
@@ -78,6 +105,6 @@ public class GraphOriented extends Graph {
                 }
             }
         }
-        return risultati;
+        return shortestPath(risultati, source, dest);
     }
 }
