@@ -2,8 +2,8 @@ import java.util.*;
 
 public class GraphNotOriented extends Graph {
 
-    public GraphNotOriented(String ccrr) {
-        super(ccrr);
+    public GraphNotOriented(String rrcc) {
+        super(rrcc);
     }
 
     @Override

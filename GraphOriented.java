@@ -49,7 +49,7 @@ public class GraphOriented extends Graph {
         return risultati;
     }
 
-    public HashMap<String, Distance> Bellman_Ford(String source) {
+    public HashMap<String, Distance> bellman_ford(String source) {
         HashMap<String, Distance> risultati = new HashMap<>();
 
         for (String key : nodes.keySet()) {
