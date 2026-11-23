@@ -30,7 +30,7 @@ public class GraphOriented extends Graph {
 
     public String[] dijkstra(String source, String dest) {
         HashMap<String, Distance> risultati = new HashMap<>();
-
+        if (!nodes.containsKey(source)) return shortestPath(risultati, source, dest);
         for (String key : nodes.keySet()) {
             risultati.put(key, new Distance(null, Float.MAX_VALUE));
         }
