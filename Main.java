@@ -4,7 +4,7 @@ private static int failed = 0;
 // adds the edge in both directions, works both as monodirectional (will be redundant) and as bidirectional
 private static void link(Graph graph, String node1, String node2, float weight) {
     graph.addEdge(node1, node2, weight);
-    graph.addEdge(node2, node2, weight);
+    graph.addEdge(node2, node1, weight);
 }
 
 private static void check(String name, String[] actual, String... expected) {
