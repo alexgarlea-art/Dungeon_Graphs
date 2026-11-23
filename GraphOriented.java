@@ -1,37 +1,31 @@
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-
 public class GraphOriented extends Graph {
 
     public GraphOriented(String rrcc) {
         super(rrcc);
     }
 
-    private String[] shortestPath(HashMap<String, Distance> map, String source, String dest){
-        List<String> spath = new ArrayList<>();
-        AtomicReference<String> toSearch = new AtomicReference<>("");
-        AtomicBoolean arrived = new AtomicBoolean(false);
-        if(map.containsKey(dest) && map.containsKey(source)){
-            spath.add(dest);
-
-            while(!arrived.get()){
-                map.forEach((name, dist) -> {
-                    if(name.equals(source)){
-                        spath.add(source);
-                        arrived.set(true);
-                    }else if(name.equals(toSearch)){
-                        toSearch.set(dist.getPrev());
-                        spath.add(name);
-                    }
-                });
-            }
-
-        }else if(!map.containsKey(source)){
+    private String[] shortestPath(HashMap<String, Distance> map, String source, String dest) {
+        if (!map.containsKey(source)) {
             IO.println("Source not in map.");
-        }else IO.println("Destination not in map.");
+            return new String[0];
+        }
+        if (!map.containsKey(dest)) {
+            IO.println("Destination not in map.");
+            return new String[0];
+        }
+        if (map.get(dest).getDistance() == Float.MAX_VALUE) {
+            return new String[0]; // unreachable
+        }
 
-        return spath.toArray(new String[spath.toArray().length]);
+        List<String> spath = new ArrayList<>();
+
+        for (String cur = dest; cur != null; cur = map.get(cur).getPrev()) {
+            spath.add(cur);
+        }
+
+        Collections.reverse(spath);
+        return spath.toArray(String[]::new);
     }
 
     public String[] dijkstra(String source, String dest) {
