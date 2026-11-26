@@ -1,104 +1,106 @@
-import java.util.*;
-public class GraphOriented extends Graph {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
-    public GraphOriented(String rrcc) {
-        super(rrcc);
+public class GraphOriented<T> extends Graph<T> {
+
+    @Override
+    public void addEdge(T source, T dest, float weight) {
+        addNode(source);
+        addNode(dest);
+        nodes.get(source).put(dest, new Adiacenza<>(dest, weight));
     }
 
-    private String[] shortestPath(HashMap<String, Distance> map, String source, String dest) {
-        if (!map.containsKey(source)) {
-            IO.println("Source not in map.");
-            return new String[0];
-        }
-        if (!map.containsKey(dest)) {
-            IO.println("Destination not in map.");
-            return new String[0];
-        }
-        if (map.get(dest).getDistance() == Float.MAX_VALUE) {
-            return new String[0]; // unreachable
+    public HashMap<T, Distance<T>> bellman_ford(T source) {
+        if (!nodes.containsKey(source)) {
+            throw new IllegalArgumentException("Nodo sorgente inesistente: " + source);
         }
 
-        List<String> spath = new ArrayList<>();
+        ArrayList<T> keys = new ArrayList<>(nodes.keySet());
 
-        for (String cur = dest; cur != null; cur = map.get(cur).getPrev()) {
-            spath.add(cur);
+        HashMap<T, Distance<T>> dist = new HashMap<>();
+        for (int i = 0; i < keys.size(); i++) {
+            dist.put(keys.get(i), new Distance<>(null, Float.POSITIVE_INFINITY));
         }
+        dist.get(source).setDistance(0);
 
-        Collections.reverse(spath);
-        return spath.toArray(String[]::new);
-    }
-
-    public String[] dijkstra(String source, String dest) {
-        HashMap<String, Distance> risultati = new HashMap<>();
-        if (!nodes.containsKey(source)) return shortestPath(risultati, source, dest);
-        for (String key : nodes.keySet()) {
-            risultati.put(key, new Distance(null, Float.MAX_VALUE));
-        }
-        if (risultati.containsKey(source)) {
-            risultati.get(source).setDistance(0);
-        }
-
-        PriorityQueue<String> coda = new PriorityQueue<>((a, b) ->
-                Float.compare(risultati.get(a).getDistance(), risultati.get(b).getDistance())
-        );
-
-        coda.add(source);
-
-        while (!coda.isEmpty()) {
-            String corrente = coda.poll();
-            Node nodoCorrente = nodes.get(corrente);
-            float distCorrente = risultati.get(corrente).getDistance();
-
-            if (distCorrente == Float.MAX_VALUE) break;
-
-            for (var entry : nodoCorrente.getAdjacencies().entrySet()) {
-                Node vicino = entry.getKey();
-                float pesoArco = entry.getValue();
-                String valoreVicino = vicino.getValue();
-
-                float nuovaDistanza = distCorrente + pesoArco;
-
-                if (nuovaDistanza < risultati.get(valoreVicino).getDistance()) {
-                    risultati.get(valoreVicino).setDistance(nuovaDistanza);
-                    risultati.get(valoreVicino).setPrev(corrente);
-
-                    coda.remove(valoreVicino);
-                    coda.add(valoreVicino);
-                }
-            }
-        }
-        return shortestPath(risultati, source, dest);
-    }
-
-    public String[] bellman_ford(String source, String dest) {
-        HashMap<String, Distance> risultati = new HashMap<>();
-
-        for (String key : nodes.keySet()) {
-            risultati.put(key, new Distance(null, Float.MAX_VALUE));
-        }
-        if (risultati.containsKey(source)) {
-            risultati.get(source).setDistance(0);
-        }
-
-        int numeroNodi = nodes.size();
-
-        for (int i = 0; i < numeroNodi - 1; i++) {
-            for (Node u : nodes.values()) {
-                float distU = risultati.get(u.getValue()).getDistance();
-                if (distU == Float.MAX_VALUE) continue;
-
-                for (var entry : u.getAdjacencies().entrySet()) {
-                    Node v = entry.getKey();
-                    float peso = entry.getValue();
-                    float distV = risultati.get(v.getValue()).getDistance();
-
-                    if (distU + peso < distV) {
-                        risultati.get(v.getValue()).setDistance(distU + peso);
-                        risultati.get(v.getValue()).setPrev(u.getValue());
+        for (int i = 1; i < keys.size(); i++) {
+            boolean modificato = false;
+            for (int j = 0; j < keys.size(); j++) {
+                T u = keys.get(j);
+                if (dist.get(u).getDistance() == Float.POSITIVE_INFINITY) continue;
+                ArrayList<Adiacenza<T>> adj = new ArrayList<>(nodes.get(u).values());
+                for (int k = 0; k < adj.size(); k++) {
+                    Adiacenza<T> a = adj.get(k);
+                    float nd = dist.get(u).getDistance() + a.getPeso();
+                    if (nd < dist.get(a.getNodo()).getDistance()) {
+                        dist.get(a.getNodo()).setDistance(nd);
+                        dist.get(a.getNodo()).setPrev(u);
+                        modificato = true;
                     }
                 }
             }
+            if (!modificato) break;
         }
-        return shortestPath(risultati, source, dest);
+
+        for (int j = 0; j < keys.size(); j++) {
+            T u = keys.get(j);
+            if (dist.get(u).getDistance() == Float.POSITIVE_INFINITY) continue;
+            ArrayList<Adiacenza<T>> adj = new ArrayList<>(nodes.get(u).values());
+            for (int k = 0; k < adj.size(); k++) {
+                Adiacenza<T> a = adj.get(k);
+                if (dist.get(u).getDistance() + a.getPeso() < dist.get(a.getNodo()).getDistance()) {
+                    throw new IllegalStateException("Il grafo contiene un ciclo negativo");
+                }
+            }
+        }
+
+        return dist;
+    }
+
+    public HashMap<T, Distance<T>> dijkstra(T source) {
+        if (!nodes.containsKey(source)) {
+            throw new IllegalArgumentException("Nodo sorgente inesistente: " + source);
+        }
+
+        ArrayList<T> keys = new ArrayList<>(nodes.keySet());
+
+        HashMap<T, Distance<T>> dist = new HashMap<>();
+        for (int i = 0; i < keys.size(); i++) {
+            dist.put(keys.get(i), new Distance<>(null, Float.POSITIVE_INFINITY));
+        }
+        dist.get(source).setDistance(0);
+
+        HashSet<T> visitati = new HashSet<>();
+
+        while (visitati.size() < keys.size()) {
+            T u = null;
+            for (int i = 0; i < keys.size(); i++) {
+                T n = keys.get(i);
+                if (!visitati.contains(n)
+                        && (u == null || dist.get(n).getDistance() < dist.get(u).getDistance())) {
+                    u = n;
+                }
+            }
+
+            if (dist.get(u).getDistance() == Float.POSITIVE_INFINITY) break;
+
+            visitati.add(u);
+
+            ArrayList<Adiacenza<T>> adj = new ArrayList<>(nodes.get(u).values());
+            for (int k = 0; k < adj.size(); k++) {
+                Adiacenza<T> a = adj.get(k);
+                if (a.getPeso() < 0) {
+                    throw new IllegalStateException("Dijkstra non ammette pesi negativi");
+                }
+                float nd = dist.get(u).getDistance() + a.getPeso();
+                if (nd < dist.get(a.getNodo()).getDistance()) {
+                    dist.get(a.getNodo()).setDistance(nd);
+                    dist.get(a.getNodo()).setPrev(u);
+                }
+            }
+        }
+
+        return dist;
     }
 }
