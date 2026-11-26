@@ -15,8 +15,7 @@ void main(String[] args) throws IOException {
         client.start(HOST, PORTA);
 
         Random random = new Random();
-        int randomPlayer = random.nextInt(3);
-        DungeonMap mappa = client.login(randomPlayer);
+        DungeonMap mappa = client.login(personaggio);
 
         IO.println("Personaggio " + personaggio + " collegato.");
         Thread.sleep(1000);
@@ -24,7 +23,7 @@ void main(String[] args) throws IOException {
         IO.println(mappa);
 
         if (mappa.getNodes().isEmpty()) {
-            throw new IllegalStateException("La mappa non contiene nodi");
+            throw new IllegalStateException("Mappa senza nodi");
         }
 
         String radice = args.length > 1
@@ -33,18 +32,19 @@ void main(String[] args) throws IOException {
 
         if (!mappa.containsNode(radice)) {
             throw new IllegalArgumentException(
-                    "La radice non è presente nella mappa: " + radice);
+                    "Radice non presente nella mappa: " + radice);
         }
 
-        GraphNotOriented<String> mst = mappa.minimumSpanningTreeFrom(radice);
+        GraphNotOriented<String> mst =
+                mappa.minimumSpanningTreeFrom(radice);
 
         IO.println();
         IO.println("Minimum spanning tree con radice " + radice + ":");
         IO.println(mst);
 
         List<String> nodi = mappa.getNodes();
-
         String posizione = mappa.containsNode("0000") ? "0000" : radice;
+        String targetServer = null;
 
         IO.println("Posizione iniziale: " + posizione);
 
@@ -53,6 +53,7 @@ void main(String[] args) throws IOException {
                     mappa.distancesFrom(posizione);
 
             List<String> destinazioniRaggiungibili = new ArrayList<>();
+
             for (String nodo : nodi) {
                 Distance<String> distanza = distanze.get(nodo);
 
@@ -64,41 +65,106 @@ void main(String[] args) throws IOException {
             }
 
             if (destinazioniRaggiungibili.isEmpty()) {
-                IO.println("Nessun altro nodo raggiungibile da " + posizione + ".");
+                IO.println(
+                        "Nessun altro nodo raggiungibile da "
+                                + posizione + ".");
                 break;
             }
 
-            String destinazione = destinazioniRaggiungibili.get(
-                    random.nextInt(destinazioniRaggiungibili.size()));
+            String destinazione = targetServer;
 
-            List<String> percorso = mappa.shortestPath(posizione, destinazione);
+            if (destinazione == null) {
+                destinazione = destinazioniRaggiungibili.get(
+                        random.nextInt(destinazioniRaggiungibili.size()));
+            }
+
+            IO.println("Destinazione: " + destinazione);
+
+            List<String> percorso =
+                    mappa.shortestPath(posizione, destinazione);
+
             if (percorso.size() < 2) {
-                IO.println("Percorso non valido da "
-                        + posizione + " a " + destinazione + "; termino.");
+                IO.println(
+                        "Percorso non valido da "
+                                + posizione
+                                + " a "
+                                + destinazione
+                                + "; termino.");
                 break;
             }
 
-            IO.println("Destinazione casuale: " + destinazione);
+            boolean ricalcolaPercorso = false;
 
             for (int i = 1; i < percorso.size(); i++) {
-                NodeMap passo = new NodeMap(percorso.get(i));
+                String prossimoNodo = percorso.get(i);
+                NodeMap passo = new NodeMap(prossimoNodo);
+
                 String comando = "move,"
                         + passo.getColonna() + ","
                         + passo.getRiga();
 
-                String risposta = client.sendCommand(comando);
-                IO.println(comando + " -> " + risposta);
-
-                posizione = percorso.get(i);
+                IO.println(
+                        "Invio " + comando
+                                + " da " + posizione
+                                + " verso " + prossimoNodo);
 
                 try {
+                    String risposta = client.sendCommand(comando);
+                    IO.println(comando + " -> " + risposta);
+
+                    posizione = prossimoNodo;
+
+                    if (risposta.startsWith("TARGET,")) {
+                        String[] campi = risposta.split(",");
+
+                        if (campi.length != 3) {
+                            throw new IOException(
+                                    "Risposta TARGET non valida: "
+                                            + risposta);
+                        }
+
+                        int colonnaTarget =
+                                Integer.parseInt(campi[1].trim());
+                        int rigaTarget =
+                                Integer.parseInt(campi[2].trim());
+
+                        targetServer = String.format(
+                                "%02d%02d",
+                                colonnaTarget,
+                                rigaTarget);
+
+                        IO.println(
+                                "Meta assegnata dal server: "
+                                        + targetServer);
+
+                        if (!targetServer.equals(destinazione)) {
+                            ricalcolaPercorso = true;
+                            break;
+                        }
+                    }
+
                     Thread.sleep(500);
+
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     return;
+                } catch (IOException e) {
+                    throw new IOException(
+                            "Movimento fallito da "
+                                    + posizione
+                                    + " verso "
+                                    + prossimoNodo
+                                    + "; comando="
+                                    + comando,
+                            e);
                 }
             }
+
+            if (ricalcolaPercorso) {
+                continue;
+            }
         }
+
     } catch (InterruptedException e) {
         throw new RuntimeException(e);
     }
