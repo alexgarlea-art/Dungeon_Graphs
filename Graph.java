@@ -19,19 +19,18 @@ public abstract class Graph<T> {
 
     @Override
     public String toString() {
-        String res = "";
+        StringBuilder res = new StringBuilder();
 
         ArrayList<T> keys = new ArrayList<>(nodes.keySet());
-        for (int i = 0; i < keys.size(); i++) {
-            T u = keys.get(i);
-            res += u + " - [ ";
+        for (T u : keys) {
+            res.append(u).append(" - [ ");
             ArrayList<Adiacenza<T>> adj = new ArrayList<>(nodes.get(u).values());
-            for (int j = 0; j < adj.size(); j++) {
-                res += adj.get(j) + " ";
+            for (Adiacenza<T> tAdiacenza : adj) {
+                res.append(tAdiacenza).append(" ");
             }
-            res += "]\n";
+            res.append("]\n");
         }
 
-        return res;
+        return res.toString();
     }
 }

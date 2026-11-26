@@ -47,11 +47,9 @@ public class GraphNotOriented<T> extends Graph<T> {
         // lista degli archi, ognuno una sola volta
         ArrayList<Edge<T>> edges = new ArrayList<>();
         HashSet<T> elaborati = new HashSet<>();
-        for (int i = 0; i < keys.size(); i++) {
-            T u = keys.get(i);
+        for (T u : keys) {
             ArrayList<Adiacenza<T>> adj = new ArrayList<>(nodes.get(u).values());
-            for (int j = 0; j < adj.size(); j++) {
-                Adiacenza<T> a = adj.get(j);
+            for (Adiacenza<T> a : adj) {
                 if (!elaborati.contains(a.getNodo())) {
                     edges.add(new Edge<>(u, a.getNodo(), a.getPeso()));
                 }
@@ -62,13 +60,12 @@ public class GraphNotOriented<T> extends Graph<T> {
 
         HashMap<T, T> parent = new HashMap<>();
         GraphNotOriented<T> mst = new GraphNotOriented<>();
-        for (int i = 0; i < keys.size(); i++) {
-            parent.put(keys.get(i), keys.get(i));
-            mst.addNode(keys.get(i));
+        for (T key : keys) {
+            parent.put(key, key);
+            mst.addNode(key);
         }
 
-        for (int i = 0; i < edges.size(); i++) {
-            Edge<T> e = edges.get(i);
+        for (Edge<T> e : edges) {
             T ru = find(parent, e.source);
             T rv = find(parent, e.dest);
             if (!ru.equals(rv)) {
@@ -96,11 +93,9 @@ public class GraphNotOriented<T> extends Graph<T> {
             T from = null;
             Adiacenza<T> migliore = null;
             ArrayList<T> ins = new ArrayList<>(inseriti);
-            for (int i = 0; i < ins.size(); i++) {
-                T u = ins.get(i);
+            for (T u : ins) {
                 ArrayList<Adiacenza<T>> adj = new ArrayList<>(nodes.get(u).values());
-                for (int j = 0; j < adj.size(); j++) {
-                    Adiacenza<T> a = adj.get(j);
+                for (Adiacenza<T> a : adj) {
                     if (!inseriti.contains(a.getNodo())
                             && (migliore == null || a.getPeso() < migliore.getPeso())) {
                         from = u;

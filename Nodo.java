@@ -1,11 +1,11 @@
 import java.util.HashMap;
 
 public class Nodo<T> {
-    private T value;
-    private HashMap<T, Float> adjacencies;
+    private final T value;
+    private final HashMap<T, Float> adjacencies;
 
-    public Nodo(T v) {
-        this.value = v;
+    public Nodo(T value) {
+        this.value = value;
         this.adjacencies = new HashMap<>();
     }
 

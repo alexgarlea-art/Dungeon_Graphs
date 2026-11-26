@@ -1,7 +1,7 @@
 public class Adiacenza<T> {
 
-    private T nodo;
-    private float peso;
+    private final T nodo;
+    private final float peso;
 
     public Adiacenza(T n, float peso) {
         this.nodo = n;

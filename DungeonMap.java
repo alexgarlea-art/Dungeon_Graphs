@@ -19,7 +19,7 @@ public final class DungeonMap {
         }
 
         DungeonMap mappa = new DungeonMap();
-        String[] nodi = testo.trim().split("\\]");
+        String[] nodi = testo.trim().split("]");
 
         for (String nodoTesto : nodi) {
             nodoTesto = nodoTesto.trim();
@@ -112,7 +112,7 @@ public final class DungeonMap {
         String corrente = destinazione;
 
         while (corrente != null) {
-            percorso.add(0, corrente);
+            percorso.addFirst(corrente);
             if (corrente.equals(partenza)) {
                 break;
             }
@@ -121,7 +121,7 @@ public final class DungeonMap {
             corrente = informazioni == null ? null : informazioni.getPrev();
         }
 
-        if (percorso.isEmpty() || !percorso.get(0).equals(partenza)) {
+        if (percorso.isEmpty() || !percorso.getFirst().equals(partenza)) {
             return new ArrayList<>();
         }
 
